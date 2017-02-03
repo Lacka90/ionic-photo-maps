@@ -1,0 +1,30 @@
+<ion-header>
+  <ion-navbar>
+    <ion-title>
+      Take a photo
+    </ion-title>
+  </ion-navbar>
+</ion-header>
+
+<ion-content padding>
+  <ion-grid>
+    <ion-row>
+      <ion-col width-50>
+        <button ion-button block (click)="takePicture()">
+          <ion-icon name="camera"></ion-icon>
+          {{ base64Image === PLACEHOLDER ? 'Take picture' : 'Drop picture' }}
+        </button>
+      </ion-col>
+      <ion-col width-50>
+        <button ion-button block (click)="save()" *ngIf="base64Image !== PLACEHOLDER">
+          <ion-icon name="cloud-upload"></ion-icon>
+          Save
+        </button>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
+
+  <ion-card>
+    <img [src]="DomSanitizer.bypassSecurityTrustUrl(base64Image)"/>
+  </ion-card>
+</ion-content>
