@@ -3,6 +3,7 @@ import { IonicApp, IonicModule, IonicErrorHandler } from 'ionic-angular';
 import { MyApp } from './app.component';
 import { HomePage } from '../pages/home/home';
 import { PhotoPage } from '../pages/photo/photo';
+import { PhotoStorage } from '../services/storage';
 
 @NgModule({
   declarations: [
@@ -19,6 +20,9 @@ import { PhotoPage } from '../pages/photo/photo';
     HomePage,
     PhotoPage
   ],
-  providers: [{provide: ErrorHandler, useClass: IonicErrorHandler}]
+  providers: [
+    {provide: ErrorHandler, useClass: IonicErrorHandler},
+    PhotoStorage
+  ]
 })
 export class AppModule {}

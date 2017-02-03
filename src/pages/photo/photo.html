@@ -7,24 +7,36 @@
 </ion-header>
 
 <ion-content padding>
-  <ion-grid>
-    <ion-row>
-      <ion-col width-50>
-        <button ion-button block (click)="takePicture()">
-          <ion-icon name="camera"></ion-icon>
-          {{ base64Image === PLACEHOLDER ? 'Take picture' : 'Drop picture' }}
-        </button>
-      </ion-col>
-      <ion-col width-50>
-        <button ion-button block (click)="save()" *ngIf="base64Image !== PLACEHOLDER">
-          <ion-icon name="cloud-upload"></ion-icon>
-          Save
-        </button>
-      </ion-col>
-    </ion-row>
-  </ion-grid>
-
   <ion-card>
-    <img [src]="DomSanitizer.bypassSecurityTrustUrl(base64Image)"/>
+    <div class="photo-image-wrapper">
+      <img [src]="DomSanitizer.bypassSecurityTrustUrl(base64Image)"/>
+    </div>
+    <ion-item>
+      <button ion-button icon-left clear item-left
+          (click)="savePicture(i)"
+          *ngIf="base64Image !== PLACEHOLDER">
+        <ion-icon name="cloud-upload"></ion-icon>
+        Save
+      </button>
+      <button ion-button icon-left clear item-right (click)="takePicture()">
+        <ion-icon
+          [name]="base64Image === PLACEHOLDER ? 'camera' : 'trash'"
+          [color]="base64Image === PLACEHOLDER ? '' : 'danger'"
+        ></ion-icon>
+        {{ base64Image === PLACEHOLDER ? 'Take picture' : 'Drop picture' }}
+      </button>
+    </ion-item>
+  </ion-card>
+
+  <ion-card *ngFor="let photo of photoList; let i = index">
+    <div class="photo-image-wrapper">
+      <img [src]="DomSanitizer.bypassSecurityTrustUrl(photo)"/>
+    </div>
+    <ion-item>
+      <button ion-button color="danger" icon-left clear item-right (click)="deletePicture(i)">
+        <ion-icon name="trash"></ion-icon>
+        Delete
+      </button>
+    </ion-item>
   </ion-card>
 </ion-content>

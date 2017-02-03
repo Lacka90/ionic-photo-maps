@@ -3,7 +3,7 @@ import { Component } from '@angular/core';
 import { NavController } from 'ionic-angular';
 import { Camera } from 'ionic-native';
 import { DomSanitizer } from '@angular/platform-browser';
-
+import { PhotoStorage } from '../../services/storage';
 
 const PLACEHOLDER: string = 'assets/images/placeholder.png'
 
@@ -14,11 +14,31 @@ const PLACEHOLDER: string = 'assets/images/placeholder.png'
 export class PhotoPage {
   private base64Image: string = PLACEHOLDER;
   private PLACEHOLDER: string = PLACEHOLDER;
+  private photoList: string[] = [];
 
   constructor(
-    public navCtrl: NavController,
+    private photoStorage: PhotoStorage,
+    private navCtrl: NavController,
     private DomSanitizer: DomSanitizer
-  ) {}
+  ) {
+    this.photoStorage.getPhotos().then(photos => {
+      this.photoList = photos;
+    })
+  }
+
+  savePicture() {
+    if (this.base64Image !== this.PLACEHOLDER) {
+      this.photoStorage.addPhoto(this.base64Image).then(() => {
+        this.photoStorage.getPhotos().then(photoList => this.photoList = photoList);
+      });
+    }
+  }
+
+  deletePicture(index) {
+    this.photoStorage.deletePhoto(index).then(() => {
+      this.photoStorage.getPhotos().then(photoList => this.photoList = photoList);
+    });
+  }
 
   takePicture() {
     if (this.base64Image === this.PLACEHOLDER) {
