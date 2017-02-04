@@ -1,8 +1,10 @@
+import { Injectable } from '@angular/core';
 import * as localforage from "localforage";
 import * as _ from 'lodash';
 
 const PHOTO_COLLECTION = 'photos';
 
+@Injectable()
 export class PhotoStorage {
   constructor() {}
 
