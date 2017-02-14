@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 
 import { NavController } from 'ionic-angular';
-import { Camera } from 'ionic-native';
+import { Camera, Geolocation, Coordinates } from 'ionic-native';
 import { DomSanitizer } from '@angular/platform-browser';
 import { PhotoStorage, PhotoRecord } from '../../services/storage';
 
@@ -15,6 +15,7 @@ export class PhotoPage {
   private base64Image: string = PLACEHOLDER;
   private PLACEHOLDER: string = PLACEHOLDER;
   private photoList: PhotoRecord[] = [];
+  private coords: Coordinates = null;
 
   constructor(
     private photoStorage: PhotoStorage,
@@ -28,7 +29,7 @@ export class PhotoPage {
 
   savePicture() {
     if (this.base64Image !== this.PLACEHOLDER) {
-      this.photoStorage.addPhoto(this.base64Image).then(() => {
+      this.photoStorage.addPhoto(this.base64Image, this.coords).then(() => {
         this.photoStorage.getPhotos().then(photoList => this.photoList = photoList);
       });
     }
@@ -47,10 +48,19 @@ export class PhotoPage {
         destinationType: Camera.DestinationType.DATA_URL,
       }).then((imageData) => {
         this.base64Image = 'data:image/jpeg;base64,' + imageData;
+        Geolocation.getCurrentPosition().then((resp) => {
+          this.coords = resp.coords;
+          console.log(this.coords);
+        }).catch((error) => {
+          this.coords = null;
+          console.error('Error getting location', error);
+        });
       }, (err) => {
+        this.coords = null;
         console.error(err);
       });
     } else {
+      this.coords = null;
       this.base64Image = this.PLACEHOLDER;
     }
   }

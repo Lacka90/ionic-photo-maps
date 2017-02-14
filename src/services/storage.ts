@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+import { Coordinates } from 'ionic-native';
 import * as localforage from "localforage";
 import { attempt } from 'lodash';
 
@@ -6,6 +7,7 @@ const PHOTO_COLLECTION = 'photos';
 
 export interface PhotoRecord {
   data: string;
+  coordinates: Coordinates
 }
 
 @Injectable()
@@ -24,9 +26,9 @@ export class PhotoStorage {
     });
   }
 
-  addPhoto(photoData: string) {
+  addPhoto(photoData: string, coordinates: Coordinates) {
     return this.getPhotos().then(photoList => {
-      photoList.push({ data: photoData });
+      photoList.push({ data: photoData, coordinates });
       return localforage.setItem(PHOTO_COLLECTION, JSON.stringify(photoList));
     });
   }
