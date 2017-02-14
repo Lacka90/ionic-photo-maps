@@ -3,7 +3,7 @@ import { Component } from '@angular/core';
 import { NavController } from 'ionic-angular';
 import { Camera } from 'ionic-native';
 import { DomSanitizer } from '@angular/platform-browser';
-import { PhotoStorage } from '../../services/storage';
+import { PhotoStorage, PhotoRecord } from '../../services/storage';
 
 const PLACEHOLDER: string = 'assets/images/placeholder.png'
 
@@ -14,7 +14,7 @@ const PLACEHOLDER: string = 'assets/images/placeholder.png'
 export class PhotoPage {
   private base64Image: string = PLACEHOLDER;
   private PLACEHOLDER: string = PLACEHOLDER;
-  private photoList: string[] = [];
+  private photoList: PhotoRecord[] = [];
 
   constructor(
     private photoStorage: PhotoStorage,

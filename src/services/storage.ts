@@ -1,17 +1,21 @@
 import { Injectable } from '@angular/core';
 import * as localforage from "localforage";
-import * as _ from 'lodash';
+import { attempt } from 'lodash';
 
 const PHOTO_COLLECTION = 'photos';
+
+export interface PhotoRecord {
+  data: string;
+}
 
 @Injectable()
 export class PhotoStorage {
   constructor() {}
 
-  getPhotos(): Promise<string[]> {
+  getPhotos(): Promise<PhotoRecord[]> {
     return localforage.getItem(PHOTO_COLLECTION).then(photoList => {
       if (photoList) {
-        const parsedPhotoList = _.attempt(() => JSON.parse(photoList as string)) as string[];
+        const parsedPhotoList = attempt(() => JSON.parse(photoList as string)) as PhotoRecord[];
         if (parsedPhotoList) {
           return parsedPhotoList;
         }
@@ -20,19 +24,20 @@ export class PhotoStorage {
     });
   }
 
-  addPhoto(photoData) {
+  addPhoto(photoData: string) {
     return this.getPhotos().then(photoList => {
-      (photoList as string[]).push(photoData);
+      photoList.push({ data: photoData });
       return localforage.setItem(PHOTO_COLLECTION, JSON.stringify(photoList));
     });
   }
 
-  deletePhoto(index) {
+  deletePhoto(index: number) {
     return this.getPhotos().then(photoList => {
-      if (photoList) {
-        (photoList as string[]).splice(index, 1);
+      if (photoList && photoList.length) {
+        photoList.splice(index, 1);
+        return localforage.setItem(PHOTO_COLLECTION, JSON.stringify(photoList));
       }
-      return localforage.setItem(PHOTO_COLLECTION, JSON.stringify(photoList));
+      return null;
     });
   }
 }
