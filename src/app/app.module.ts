@@ -3,13 +3,15 @@ import { IonicApp, IonicModule, IonicErrorHandler } from 'ionic-angular';
 import { MyApp } from './app.component';
 import { HomePage } from '../pages/home/home';
 import { PhotoPage } from '../pages/photo/photo';
+import { MapsPage } from '../pages/maps/maps';
 import { PhotoStorage } from '../services/storage';
 
 @NgModule({
   declarations: [
     MyApp,
     HomePage,
-    PhotoPage
+    PhotoPage,
+    MapsPage
   ],
   imports: [
     IonicModule.forRoot(MyApp)
@@ -18,7 +20,8 @@ import { PhotoStorage } from '../services/storage';
   entryComponents: [
     MyApp,
     HomePage,
-    PhotoPage
+    PhotoPage,
+    MapsPage
   ],
   providers: [
     {provide: ErrorHandler, useClass: IonicErrorHandler},
