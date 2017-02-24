@@ -7,7 +7,7 @@ const PHOTO_COLLECTION = 'photos';
 
 export interface PhotoRecord {
   data: string;
-  coordinates: Coordinates
+  coords: Coordinates;
 }
 
 @Injectable()
@@ -28,9 +28,22 @@ export class PhotoStorage {
 
   addPhoto(photoData: string, coordinates: Coordinates) {
     return this.getPhotos().then(photoList => {
-      photoList.push({ data: photoData, coordinates });
+      const coords = this.coordsToJSON(coordinates);
+      photoList.push({ data: photoData, coords });
       return localforage.setItem(PHOTO_COLLECTION, JSON.stringify(photoList));
     });
+  }
+
+  coordsToJSON(coordinates: Coordinates) : Coordinates {
+    return {
+      accuracy: coordinates.accuracy,
+      altitude: coordinates.altitude,
+      altitudeAccuracy: coordinates.altitudeAccuracy,
+      heading: coordinates.heading,
+      latitude: coordinates.latitude,
+      longitude: coordinates.longitude,
+      speed: coordinates.speed,
+    };
   }
 
   deletePhoto(index: number) {
