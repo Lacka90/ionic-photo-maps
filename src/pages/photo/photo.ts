@@ -16,6 +16,7 @@ export class PhotoPage {
   private PLACEHOLDER: string = PLACEHOLDER;
   private photoList: PhotoRecord[] = [];
   private coords: Coordinates = null;
+  private locationLoading: boolean = false;
 
   constructor(
     private photoStorage: PhotoStorage,
@@ -49,12 +50,15 @@ export class PhotoPage {
         correctOrientation: true,
         destinationType: Camera.DestinationType.DATA_URL,
       }).then((imageData) => {
+        this.locationLoading = true;
         this.base64Image = 'data:image/jpeg;base64,' + imageData;
         Geolocation.getCurrentPosition().then((resp) => {
           this.coords = resp.coords;
+          this.locationLoading = false;
           console.log(this.coords);
         }).catch((error) => {
           this.coords = null;
+          this.locationLoading = false;
           console.error('Error getting location', error);
         });
       }, (err) => {

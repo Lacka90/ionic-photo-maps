@@ -1,3 +1,11 @@
 .photo-image-wrapper {
   max-height: 250px;
+  position: relative;
+
+  & > .loader {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+  }
 }

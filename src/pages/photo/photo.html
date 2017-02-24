@@ -9,11 +9,13 @@
 <ion-content padding>
   <ion-card>
     <div class="photo-image-wrapper">
+      <ion-spinner class="loader" *ngIf="locationLoading"></ion-spinner>
       <img [src]="DomSanitizer.bypassSecurityTrustUrl(base64Image)"/>
     </div>
     <ion-item>
       <button ion-button icon-left clear item-left
           (click)="savePicture()"
+          [disabled]="locationLoading"
           *ngIf="base64Image !== PLACEHOLDER">
         <ion-icon name="cloud-upload"></ion-icon>
         Save
