@@ -32,6 +32,8 @@ export class PhotoPage {
       this.photoStorage.addPhoto(this.base64Image, this.coords).then(() => {
         this.photoStorage.getPhotos().then(photoList => this.photoList = photoList);
       });
+      this.coords = null;
+      this.base64Image = this.PLACEHOLDER;
     }
   }
 
