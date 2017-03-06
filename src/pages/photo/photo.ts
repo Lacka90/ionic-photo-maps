@@ -93,9 +93,9 @@ export class PhotoPage {
     return new Promise((resolve, reject) => {
       (window as any).resolveLocalFileSystemURL(file, (fileEntry) => {
         fileEntry.file((resFile) => {
-          var reader = new FileReader();
+          const reader = new FileReader();
           reader.onloadend = (evt: any) => {
-            var imgBlob: any = new Blob([evt.target.result], { type: 'image/jpeg' });
+            const imgBlob: any = new Blob([evt.target.result], { type: 'image/jpeg' });
             imgBlob.name = 'sample.jpg';
             resolve(imgBlob);
           };
@@ -111,12 +111,12 @@ export class PhotoPage {
   }
 
   rotateImage(imageBlob): Promise<Blob> {
-    var urlCreator = window.URL || (window as any).webkitURL;
+    const urlCreator = window.URL || (window as any).webkitURL;
     return new Promise((resolve, reject) => {
-      let img = new Image()
+      const img = new Image()
 
       img.onload = () => {
-        exif.getData(img, () => {
+        exif.getData(img, function () {
           let width = img.width,
               height = img.height,
               canvas = document.createElement('canvas'),
