@@ -12,6 +12,8 @@
     <allow-intent href="sms:*" />
     <allow-intent href="mailto:*" />
     <allow-intent href="geo:*" />
+
+    <hook type="before_build" src="scripts/environment.js" />
     <platform name="android">
         <allow-intent href="market:*" />
     </platform>

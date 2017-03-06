@@ -5,7 +5,7 @@ import {
  GoogleMapsLatLng,
  GoogleMapsMarkerOptions
 } from 'ionic-native';
-import { PhotoStorage } from './../../services/storage';
+import { PhotoStorage, PhotoRecord } from './../../services/storage';
 
 @Component({
   selector: 'page-maps',
@@ -31,8 +31,11 @@ export class MapsPage {
   }
 
   loadImagePlaces(map: GoogleMap) {
-    this.photoStorage.getPhotos().then(photos => {
-      photos.forEach(photo => {
+    this.photoStorage.photoRef.once('value', (snapshot: any) => {
+      const items = snapshot.val();
+      const keys = Object.keys(items);
+      keys.forEach((key: string) => {
+        const photo: PhotoRecord = items[key];
         const coords = photo.coords as Coordinates;
         if (coords) {
           if (coords.latitude && coords.longitude) {
