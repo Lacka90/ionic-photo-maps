@@ -1,4 +1,5 @@
-import { Injectable } from '@angular/core';
+import { Injectable, NgZone } from '@angular/core';
+import { Subject } from 'rxjs';
 import firebase from 'firebase';
 
 import * as config from '../config.json';
@@ -13,13 +14,23 @@ const firebaseConfig = {
 
 @Injectable()
 export class AuthService {
+  public authSubject: Subject<any> = null;
   private fireAuth: firebase.auth.Auth;
   private userProfile: any = null;
+  private zone = null;
 
   constructor() {
     firebase.initializeApp(firebaseConfig);
     this.userProfile = firebase.database().ref('/userProfile');
     this.fireAuth = firebase.auth();
+    this.zone = new NgZone({});
+    this.authSubject = new Subject();
+
+    firebase.auth().onAuthStateChanged((user) => {
+      this.zone.run(() => {
+        this.authSubject.next(user);
+      });
+    });
   }
 
   signUp(email: string, password: string): firebase.Promise<any> {

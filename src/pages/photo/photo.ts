@@ -6,7 +6,6 @@ import { DomSanitizer } from '@angular/platform-browser';
 import { PhotoStorage } from '../../services/storage';
 import { PhotoRecord } from './../../services/storage';
 
-import * as firebase from 'firebase';
 import * as exif from 'exif-js';
 
 const PLACEHOLDER: string = 'assets/images/placeholder.png'
@@ -20,7 +19,6 @@ export class PhotoPage {
   private PLACEHOLDER: string = PLACEHOLDER;
   private coords: Coordinates = null;
   private locationLoading: boolean = false;
-  private storageRef: firebase.storage.Reference = null;
   private image: Blob = null;
 
   constructor(
@@ -28,36 +26,23 @@ export class PhotoPage {
     private navCtrl: NavController,
     private DomSanitizer: DomSanitizer,
     private platform: Platform
-  ) {
-    this.storageRef = firebase.storage().ref()
-  }
+  ) {}
 
   savePicture() {
-    if (this.base64Image) {
-      const image = new Image()
+    if (this.image) {
+      const metadata = { contentType: (this.image as any).type };
 
-      image.onload = () => {
-        const metadata = {
-          'contentType': this.image.type
-        };
-
-        const filename = `image-${new Date().getTime()}.jpg`;
-        this.storageRef.child('photos/' + filename).put(image, metadata).then((snapshot) => {
-          const url = snapshot.downloadURL;
-          this.photoStorage.addPhoto('photos/' + filename, url, this.coords);
-          this.coords = null;
-          this.image = null;
-          this.base64Image = this.PLACEHOLDER;
-        }).catch((error) => {
-          console.error('Upload failed:', error);
-          this.coords = null;
-          this.image = null;
-          this.base64Image = this.PLACEHOLDER;
-        });
-      }
-
-      image.src = this.base64Image;
+      const filename = `image-${new Date().getTime()}.jpg`;
+      this.photoStorage.uploadPicture(this.image, this.coords, filename, metadata)
+        .then(() => this.resetImage())
+        .catch(() => this.resetImage());
     }
+  }
+
+  resetImage() {
+    this.coords = null;
+    this.image = null;
+    this.base64Image = this.PLACEHOLDER;
   }
 
   deletePicture(photo: PhotoRecord) {
@@ -69,36 +54,39 @@ export class PhotoPage {
       Camera.getPicture({
         correctOrientation: true,
         targetWidth: 720,
-        //allowEdit: true,
         destinationType: Camera.DestinationType.FILE_URI,
       }).then((fileData) => {
         this.locationLoading = true;
-        debugger;
         return this.makeBlobFromFile(fileData);
       }).then((imageData) => {
         return this.rotateImage(imageData);
       }).then((rotatedData: Blob) => {
-        debugger;
-
+        this.image = rotatedData;
         const urlCreator = window.URL || (window as any).webkitURL;
         this.base64Image = urlCreator.createObjectURL(rotatedData);
-        Geolocation.getCurrentPosition().then((resp) => {
-          this.coords = resp.coords;
-          this.locationLoading = false;
-          console.log(this.coords);
-        }).catch((error) => {
-          this.coords = null;
-          this.locationLoading = false;
-          console.error('Error getting location', error);
-        });
-      }, (err) => {
-        this.coords = null;
-        console.error(err);
+        this.getGeoCoords().then(coords => this.coords = coords);
       });
     } else {
-      this.coords = null;
+      this.resetCoords();
       this.base64Image = this.PLACEHOLDER;
     }
+  }
+
+  getGeoCoords(): Promise<Coordinates> {
+    return new Promise((resolve, reject) => {
+      return Geolocation.getCurrentPosition().then((resp) => {
+        this.locationLoading = false;
+        resolve(resp.coords);
+      }).catch((error) => {
+        this.locationLoading = false;
+        this.resetCoords();
+      });
+    });
+  }
+
+  resetCoords() {
+    this.coords = null;
+    this.image = null;
   }
 
   makeBlobFromFile(file): Promise<Blob> {
@@ -128,7 +116,7 @@ export class PhotoPage {
       let img = new Image()
 
       img.onload = () => {
-        exif.getData(img, function() {
+        exif.getData(img, () => {
           let width = img.width,
               height = img.height,
               canvas = document.createElement('canvas'),
@@ -145,8 +133,8 @@ export class PhotoPage {
 
           switch (srcOrientation) {
             case 2: ctx.transform(-1, 0, 0, 1, width, 0); break;
-            case 3: ctx.transform(-1, 0, 0, -1, width, height ); break;
-            case 4: ctx.transform(1, 0, 0, -1, 0, height ); break;
+            case 3: ctx.transform(-1, 0, 0, -1, width, height); break;
+            case 4: ctx.transform(1, 0, 0, -1, 0, height); break;
             case 5: ctx.transform(0, 1, 1, 0, 0, 0); break;
             case 6: ctx.transform(0, 1, -1, 0, height , 0); break;
             case 7: ctx.transform(0, -1, -1, 0, height , width); break;

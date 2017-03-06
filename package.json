@@ -41,5 +41,30 @@
     "orientation-exif-blob": "^1.0.1",
     "typescript": "2.0.9",
     "whatwg-fetch": "^2.0.3"
-  }
+  },
+  "cordovaPlugins": [
+    "ionic-plugin-keyboard",
+    "cordova-plugin-whitelist",
+    "cordova-plugin-console",
+    "cordova-plugin-statusbar",
+    "cordova-plugin-device",
+    "cordova-plugin-splashscreen",
+    {
+      "locator": "https://github.com/apache/cordova-plugin-camera.git",
+      "id": "cordova-plugin-camera"
+    },
+    "cordova-plugin-compat"
+  ],
+  "cordovaPlatforms": [
+    {
+      "platform": "android",
+      "version": "",
+      "locator": "android"
+    },
+    {
+      "platform": "ios",
+      "version": "",
+      "locator": "ios"
+    }
+  ]
 }

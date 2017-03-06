@@ -25,23 +25,38 @@ export class MapsPage {
     if (!this.map) {
       this.map = new GoogleMap(element);
       this.map.one(GoogleMapsEvent.MAP_READY).then(() => {
-        this.loadImagePlaces(this.map);
+        this.loadImagePlaces(this.map)
+          .then(coords => {
+            const filtered = coords.filter(coord => coord);
+            const bounds = filtered.map((coord: Coordinates) => {
+              return new GoogleMapsLatLng(coord.latitude, coord.longitude);
+            });
+
+            this.map.moveCamera({
+              target: bounds,
+            });
+          });
       });
     }
   }
 
-  loadImagePlaces(map: GoogleMap) {
-    this.photoStorage.photoRef.once('value', (snapshot: any) => {
-      const items = snapshot.val();
-      const keys = Object.keys(items);
-      keys.forEach((key: string) => {
-        const photo: PhotoRecord = items[key];
-        const coords = photo.coords as Coordinates;
-        if (coords) {
-          if (coords.latitude && coords.longitude) {
-            this.createMarker(coords, photo.data, map);
-          }
-        }
+  loadImagePlaces(map: GoogleMap): Promise<Coordinates[]> {
+    return new Promise((resolve) => {
+      this.photoStorage.photoRef.once('value', (snapshot: any) => {
+        const items = snapshot.val();
+        const keys = Object.keys(items);
+        resolve(
+          keys.map((key: string) => {
+            const photo: PhotoRecord = items[key];
+            const coords = photo.coords as Coordinates;
+            if (coords) {
+              if (coords.latitude && coords.longitude) {
+                this.createMarker(coords, photo.data, map);
+              }
+              return coords;
+            }
+          })
+        );
       });
     });
   }

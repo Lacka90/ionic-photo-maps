@@ -1,27 +1,23 @@
-import { Component, NgZone } from '@angular/core';
+import { Component } from '@angular/core';
 import { NavController, AlertController } from 'ionic-angular';
 import { PhotoPage } from './../photo/photo';
 import { MapsPage } from './../maps/maps';
 import { AuthService } from './../../services/auth';
-import firebase from 'firebase';
 
 @Component({
   selector: 'page-home',
   templateUrl: 'home.html'
 })
 export class HomePage {
-  private zone = null;
   private user = null;
+
   constructor(
     public navCtrl: NavController,
     private alertCtrl: AlertController,
     private authService: AuthService
   ) {
-    this.zone = new NgZone({});
-    firebase.auth().onAuthStateChanged((user) => {
-      this.zone.run(() => {
-        this.user = user;
-      });
+    this.authService.authSubject.subscribe(user => {
+      this.user = user;
     });
   }
 
