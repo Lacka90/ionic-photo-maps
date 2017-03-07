@@ -33,6 +33,21 @@ var conf = convict({
     default: '0000000000',
     env: 'MESSAGING_SENDER_ID',
   },
+  private: {
+    gmaps: {
+      /* the default value is a read only token */
+      androidKey: {
+        format: String,
+        default: 'ANDROID_MAPS_KEY',
+        env: 'MAPS_ANDROID',
+      },
+      iosKey: {
+        format: String,
+        default: 'IOS_MAPS_KEY',
+        env: 'MAPS_IOS',
+      },
+    },
+  },
 });
 
 // Perform validation

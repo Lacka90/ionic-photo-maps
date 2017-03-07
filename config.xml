@@ -13,6 +13,8 @@
     <allow-intent href="mailto:*" />
     <allow-intent href="geo:*" />
     <hook src="scripts/environment.js" type="before_build" />
+    <hook src="scripts/addMapsKey.js" type="before_build" />
+    <hook src="scripts/removeMapsKey.js" type="after_build" />
     <platform name="android">
         <allow-intent href="market:*" />
     </platform>
@@ -43,6 +45,8 @@
         <variable name="GEOLOCATION_USAGE_DESCRIPTION" value=" " />
     </plugin>
     <plugin name="cordova-plugin-googlemaps" spec="~1.4.0">
+        <variable name="API_KEY_FOR_ANDROID" value="{{ MAPS_ANDROID }}" />
+        <variable name="API_KEY_FOR_IOS" value="{{ MAPS_IOS }}" />
         <variable name="NSLOCATIONWHENINUSEUSAGEDESCRIPTION" value="Show your location on the map" />
         <variable name="NSLOCATIONALWAYSUSAGEDESCRIPTION" value="Trace your location on the map" />
     </plugin>
