@@ -1,36 +1,64 @@
 import { Injectable } from '@angular/core';
 import { Coordinates } from 'ionic-native';
-import * as localforage from "localforage";
-import { attempt } from 'lodash';
+import firebase from 'firebase';
 
-const PHOTO_COLLECTION = 'photos';
+const DEFAULT_COORDS = {
+  latitude: null,
+  longitude: null,
+  accuracy: null,
+  altitude: null,
+  altitudeAccuracy: null,
+  heading: null,
+  speed: null
+};
 
 export interface PhotoRecord {
+  $key?: string;
+  filename?: string;
   data: string;
   coords: Coordinates;
+  createdAt?: Object | Date | string;
+  ordering: number;
 }
 
 @Injectable()
 export class PhotoStorage {
-  constructor() {}
+  public photoRef: firebase.database.Reference = null;
+  private storageRef: firebase.storage.Reference = null;
+  private photos: PhotoRecord[] = [];
 
-  getPhotos(): Promise<PhotoRecord[]> {
-    return localforage.getItem(PHOTO_COLLECTION).then(photoList => {
-      if (photoList) {
-        const parsedPhotoList = attempt(() => JSON.parse(photoList as string)) as PhotoRecord[];
-        if (parsedPhotoList) {
-          return parsedPhotoList;
-        }
+  constructor() {
+    this.photoRef = firebase.database().ref('/items')
+    this.photoRef.orderByChild('ordering').on('value', (snapshot: any) => {
+      const items = snapshot.val();
+      if (items) {
+        const keys = Object.keys(items);
+        this.photos = keys.map((key) => {
+          return Object.assign({}, items[key], { $key: key });
+        });
       }
-      return [];
+    })
+    this.storageRef = firebase.storage().ref()
+  }
+
+  uploadPicture(image, coords: Coordinates = DEFAULT_COORDS, filename, metadata = {}) {
+    return this.storageRef.child('photos/' + filename).put(image, metadata).then((snapshot) => {
+      const url = snapshot.downloadURL;
+      return this.addPhoto('photos/' + filename, url, coords);
     });
   }
 
-  addPhoto(photoData: string, coordinates: Coordinates) {
-    return this.getPhotos().then(photoList => {
-      const coords = this.coordsToJSON(coordinates);
-      photoList.push({ data: photoData, coords });
-      return localforage.setItem(PHOTO_COLLECTION, JSON.stringify(photoList));
+  addPhoto(filename: string, data: string, coordinates: Coordinates) {
+    const coords = this.coordsToJSON(coordinates);
+    return this.photoRef.once('value', (snapshot: any) => {
+      const newPostRef = this.photoRef.push();
+      return newPostRef.set({
+        filename,
+        data,
+        coords,
+        createdAt: firebase.database.ServerValue.TIMESTAMP,
+        ordering: Number.MAX_SAFE_INTEGER - Object.keys(snapshot.val()).length,
+      });
     });
   }
 
@@ -46,13 +74,8 @@ export class PhotoStorage {
     };
   }
 
-  deletePhoto(index: number) {
-    return this.getPhotos().then(photoList => {
-      if (photoList && photoList.length) {
-        photoList.splice(index, 1);
-        return localforage.setItem(PHOTO_COLLECTION, JSON.stringify(photoList));
-      }
-      return null;
-    });
+  deletePhoto(photo: PhotoRecord) {
+    this.photoRef.child(photo.$key).remove();
+    this.storageRef.child(photo.filename).delete();
   }
 }

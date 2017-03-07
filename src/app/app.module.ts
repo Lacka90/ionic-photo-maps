@@ -5,6 +5,7 @@ import { HomePage } from '../pages/home/home';
 import { PhotoPage } from '../pages/photo/photo';
 import { MapsPage } from '../pages/maps/maps';
 import { PhotoStorage } from '../services/storage';
+import { AuthService } from '../services/auth';
 
 @NgModule({
   declarations: [
@@ -14,7 +15,7 @@ import { PhotoStorage } from '../services/storage';
     MapsPage
   ],
   imports: [
-    IonicModule.forRoot(MyApp)
+    IonicModule.forRoot(MyApp),
   ],
   bootstrap: [IonicApp],
   entryComponents: [
@@ -25,7 +26,8 @@ import { PhotoStorage } from '../services/storage';
   ],
   providers: [
     {provide: ErrorHandler, useClass: IonicErrorHandler},
-    PhotoStorage
+    PhotoStorage,
+    AuthService
   ]
 })
 export class AppModule {}

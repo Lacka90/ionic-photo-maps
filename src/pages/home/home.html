@@ -3,19 +3,28 @@
     <ion-title>
       Ionic photo maps
     </ion-title>
+    <ion-buttons end>
+      <button *ngIf="!user" ion-button icon-only (click)="signIn()">
+        <ion-icon name="log-in"></ion-icon>
+      </button>
+      <button *ngIf="user" ion-button icon-only (click)="signOut()">
+        <ion-icon name="log-out"></ion-icon>
+      </button>
+    </ion-buttons>
+
   </ion-navbar>
 </ion-header>
 
 <ion-content class="card-background-page">
+  <div *ngIf="user">
+    <ion-card (click)="goPhotoPage()">
+      <img src="assets/images/photo-menu-bg.jpg"/>
+      <div class="card-title">Take a picture</div>
+    </ion-card>
 
-  <ion-card (click)="goPhotoPage()">
-    <img src="assets/images/photo-menu-bg.jpg"/>
-    <div class="card-title">Take a picture</div>
-  </ion-card>
-
-  <ion-card (click)="goMapsPage()">
-    <img src="assets/images/photo-menu-bg.jpg"/>
-    <div class="card-title">Open maps</div>
-  </ion-card>
-
+    <ion-card (click)="goMapsPage()">
+      <img src="assets/images/photo-menu-bg.jpg"/>
+      <div class="card-title">Open maps</div>
+    </ion-card>
+  </div>
 </ion-content>

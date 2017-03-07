@@ -9,33 +9,33 @@
 <ion-content padding>
   <ion-card>
     <div class="photo-image-wrapper">
-      <ion-spinner class="loader" *ngIf="locationLoading"></ion-spinner>
+      <ion-spinner class="loader" color="primary" *ngIf="locationLoading"></ion-spinner>
       <img [src]="DomSanitizer.bypassSecurityTrustUrl(base64Image)"/>
     </div>
     <ion-item>
       <button ion-button icon-left clear item-left
           (click)="savePicture()"
           [disabled]="locationLoading"
-          *ngIf="base64Image !== PLACEHOLDER">
+          *ngIf="image !== null">
         <ion-icon name="cloud-upload"></ion-icon>
         Save
       </button>
       <button ion-button icon-left clear item-right (click)="takePicture()">
         <ion-icon
-          [name]="base64Image === PLACEHOLDER ? 'camera' : 'trash'"
-          [color]="base64Image === PLACEHOLDER ? '' : 'danger'"
+          [name]="image === null ? 'camera' : 'trash'"
+          [color]="image === null ? '' : 'danger'"
         ></ion-icon>
-        {{ base64Image === PLACEHOLDER ? 'Take picture' : 'Drop picture' }}
+        {{ image === null ? 'Take picture' : 'Drop picture' }}
       </button>
     </ion-item>
   </ion-card>
 
-  <ion-card *ngFor="let photo of photoList; let ind = index">
+  <ion-card *ngFor="let photo of photoStorage.photos; let ind = index; trackBy:photo?.$key">
     <div class="photo-image-wrapper">
       <img [src]="DomSanitizer.bypassSecurityTrustUrl(photo.data)"/>
     </div>
     <ion-item>
-      <button ion-button color="danger" icon-left clear item-right (click)="deletePicture(ind)">
+      <button ion-button color="danger" icon-left clear item-right (click)="deletePicture(photo)">
         <ion-icon name="trash"></ion-icon>
         Delete
       </button>
