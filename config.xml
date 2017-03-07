@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='utf-8'?>
-<widget id="com.codingsans.photomaps" version="0.0.1" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
+<widget id="com.codingsans.photomaps" version="0.0.2" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
     <name>V2 Test</name>
     <description>Ionic photo application</description>
     <author email="lacka@codingsans.com" href="https://github.com/Lacka90">Laszlo {Lacka} Csele</author>
@@ -39,7 +39,6 @@
     <plugin name="cordova-plugin-statusbar" spec="2.2.1" />
     <plugin name="cordova-plugin-device" spec="1.1.4" />
     <plugin name="cordova-plugin-splashscreen" spec="~4.0.1" />
-    <plugin name="cordova-plugin-camera" spec="~2.3.1" />
     <plugin name="cordova-plugin-file" spec="~4.3.1" />
     <plugin name="cordova-plugin-geolocation" spec="~2.4.1">
         <variable name="GEOLOCATION_USAGE_DESCRIPTION" value=" " />
@@ -49,5 +48,9 @@
         <variable name="API_KEY_FOR_IOS" value="{{ MAPS_IOS }}" />
         <variable name="NSLOCATIONWHENINUSEUSAGEDESCRIPTION" value="Show your location on the map" />
         <variable name="NSLOCATIONALWAYSUSAGEDESCRIPTION" value="Trace your location on the map" />
+    </plugin>
+    <plugin name="cordova-plugin-camera" spec="https://github.com/apache/cordova-plugin-camera.git#d16482d292fac07a28869f763a2cfb0785a14f0b">
+        <variable name="CAMERA_USAGE_DESCRIPTION" value=" " />
+        <variable name="PHOTOLIBRARY_USAGE_DESCRIPTION" value=" " />
     </plugin>
 </widget>

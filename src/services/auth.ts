@@ -1,3 +1,4 @@
+import { PhotoStorage } from './storage';
 import { Injectable, NgZone } from '@angular/core';
 import { Subject } from 'rxjs';
 import firebase from 'firebase';
@@ -18,8 +19,11 @@ export class AuthService {
   private fireAuth: firebase.auth.Auth;
   private userProfile: any = null;
   private zone = null;
+  private authedUser: { uid?: string } = { uid: null };
 
-  constructor() {
+  constructor(
+    private storage: PhotoStorage
+  ) {
     firebase.initializeApp(firebaseConfig);
     this.userProfile = firebase.database().ref('/userProfile');
     this.fireAuth = firebase.auth();
@@ -28,6 +32,10 @@ export class AuthService {
 
     firebase.auth().onAuthStateChanged((user) => {
       this.zone.run(() => {
+        if (!this.authedUser || user && this.authedUser.uid !== user.uid) {
+          this.storage.initDbByUser(user.uid);
+        }
+        this.authedUser = user;
         this.authSubject.next(user);
       });
     });
