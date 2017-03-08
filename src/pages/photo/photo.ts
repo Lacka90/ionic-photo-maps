@@ -3,8 +3,7 @@ import { Component } from '@angular/core';
 import { NavController, Platform } from 'ionic-angular';
 import { Camera, Geolocation, Coordinates } from 'ionic-native';
 import { DomSanitizer } from '@angular/platform-browser';
-import { PhotoStorage } from '../../services/storage';
-import { PhotoRecord } from './../../services/storage';
+import { PhotoStorage, PhotoRecord } from '../../services/storage';
 
 import * as exif from 'exif-js';
 

@@ -27,21 +27,25 @@ export class PhotoStorage {
   private storageRef: firebase.storage.Reference = null;
   private photos: PhotoRecord[] = [];
 
-  constructor() {
-    this.photoRef = firebase.database().ref('/items')
-    this.photoRef.orderByChild('ordering').on('value', (snapshot: any) => {
-      const items = snapshot.val();
-      if (items) {
-        const keys = Object.keys(items);
-        this.photos = keys.map((key) => {
-          return Object.assign({}, items[key], { $key: key });
-        });
-      }
-    })
-    this.storageRef = firebase.storage().ref()
+  constructor() {}
+
+  initDbByUser(owner) {
+    if (owner) {
+      this.storageRef = firebase.storage().ref();
+      this.photoRef = firebase.database().ref(`/items/${owner}`)
+      this.photoRef.on('value', (snapshot: any) => {
+        const items = snapshot.val();
+        if (items) {
+          const keys = Object.keys(items);
+          this.photos = keys.map((key) => {
+            return Object.assign({}, items[key], { $key: key });
+          });
+        }
+      });
+    }
   }
 
-  uploadPicture(image, coords: Coordinates = DEFAULT_COORDS, filename, metadata = {}) {
+  uploadPicture(image, coords: Coordinates = DEFAULT_COORDS, filename: string, metadata = {}) {
     return this.storageRef.child('photos/' + filename).put(image, metadata).then((snapshot) => {
       const url = snapshot.downloadURL;
       return this.addPhoto('photos/' + filename, url, coords);
@@ -50,15 +54,11 @@ export class PhotoStorage {
 
   addPhoto(filename: string, data: string, coordinates: Coordinates) {
     const coords = this.coordsToJSON(coordinates);
-    return this.photoRef.once('value', (snapshot: any) => {
-      const newPostRef = this.photoRef.push();
-      return newPostRef.set({
-        filename,
-        data,
-        coords,
-        createdAt: firebase.database.ServerValue.TIMESTAMP,
-        ordering: Number.MAX_SAFE_INTEGER - Object.keys(snapshot.val()).length,
-      });
+    return this.photoRef.push({
+      filename,
+      data,
+      coords,
+      createdAt: firebase.database.ServerValue.TIMESTAMP,
     });
   }
 

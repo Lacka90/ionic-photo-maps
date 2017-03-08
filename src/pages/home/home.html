@@ -17,6 +17,10 @@
 
 <ion-content class="card-background-page">
   <div *ngIf="user">
+    <div class="authenticated">
+      {{ user.email }}
+    </div>
+
     <ion-card (click)="goPhotoPage()">
       <img src="assets/images/photo-menu-bg.jpg"/>
       <div class="card-title">Take a picture</div>
