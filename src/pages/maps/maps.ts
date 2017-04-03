@@ -42,12 +42,9 @@ export class MapsPage {
 
   loadImagePlaces(map: GoogleMap): Promise<Coordinates[]> {
     return new Promise((resolve) => {
-      this.photoStorage.photoRef.once('value', (snapshot: any) => {
-        const items = snapshot.val();
-        const keys = Object.keys(items);
+      this.photoStorage.photos.subscribe((items: PhotoRecord[]) => {
         resolve(
-          keys.map((key: string) => {
-            const photo: PhotoRecord = items[key];
+          items.map((photo: PhotoRecord) => {
             const coords = photo.coords as Coordinates;
             if (coords) {
               if (coords.latitude && coords.longitude) {

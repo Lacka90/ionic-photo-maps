@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Coordinates } from 'ionic-native';
 import firebase from 'firebase';
+import { AngularFire, FirebaseListObservable } from 'angularfire2';
 
 const DEFAULT_COORDS = {
   latitude: null,
@@ -23,25 +24,15 @@ export interface PhotoRecord {
 
 @Injectable()
 export class PhotoStorage {
-  public photoRef: firebase.database.Reference = null;
   private storageRef: firebase.storage.Reference = null;
-  private photos: PhotoRecord[] = [];
+  public photos: FirebaseListObservable<PhotoRecord[]> = null;
 
-  constructor() {}
+  constructor(private af: AngularFire) {}
 
   initDbByUser(owner) {
     if (owner) {
       this.storageRef = firebase.storage().ref();
-      this.photoRef = firebase.database().ref(`/items/${owner}`)
-      this.photoRef.on('value', (snapshot: any) => {
-        const items = snapshot.val();
-        if (items) {
-          const keys = Object.keys(items);
-          this.photos = keys.map((key) => {
-            return Object.assign({}, items[key], { $key: key });
-          });
-        }
-      });
+      this.photos = this.af.database.list(`/items/${owner}`);
     }
   }
 
@@ -54,7 +45,7 @@ export class PhotoStorage {
 
   addPhoto(filename: string, data: string, coordinates: Coordinates) {
     const coords = this.coordsToJSON(coordinates);
-    return this.photoRef.push({
+    return this.photos.push({
       filename,
       data,
       coords,
@@ -75,7 +66,7 @@ export class PhotoStorage {
   }
 
   deletePhoto(photo: PhotoRecord) {
-    this.photoRef.child(photo.$key).remove();
+    this.photos.remove(photo.$key);
     this.storageRef.child(photo.filename).delete();
   }
 }

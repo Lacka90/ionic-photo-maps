@@ -30,7 +30,7 @@
     </ion-item>
   </ion-card>
 
-  <ion-card *ngFor="let photo of photoStorage.photos; let ind = index; trackBy:photo?.$key">
+  <ion-card *ngFor="let photo of photoStorage.photos | async; let ind = index; trackBy:photo?.$key">
     <div class="photo-image-wrapper">
       <img [src]="DomSanitizer.bypassSecurityTrustUrl(photo.data)"/>
     </div>
