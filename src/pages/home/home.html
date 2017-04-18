@@ -4,10 +4,13 @@
       Ionic photo maps
     </ion-title>
     <ion-buttons end>
-      <button *ngIf="!user" ion-button icon-only (click)="signIn()">
+      <button *ngIf="!user" ion-button icon-only (click)="signup()">
+        <ion-icon name="person-add"></ion-icon>
+      </button>
+      <button *ngIf="!user" ion-button icon-only (click)="login()">
         <ion-icon name="log-in"></ion-icon>
       </button>
-      <button *ngIf="user" ion-button icon-only (click)="signOut()">
+      <button *ngIf="user" ion-button icon-only (click)="logout()">
         <ion-icon name="log-out"></ion-icon>
       </button>
     </ion-buttons>

@@ -34,6 +34,7 @@
     "@ionic/app-scripts": "1.0.0",
     "@types/localforage": "0.0.33",
     "@types/lodash": "ts2.0",
+    "angularfire2": "^2.0.0-beta.8",
     "convict": "^2.0.0",
     "dotenv": "^4.0.0",
     "ios-deploy": "^1.9.1",

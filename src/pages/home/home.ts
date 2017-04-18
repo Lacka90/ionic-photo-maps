@@ -3,6 +3,7 @@ import { NavController, AlertController } from 'ionic-angular';
 import { PhotoPage } from './../photo/photo';
 import { MapsPage } from './../maps/maps';
 import { AuthService } from './../../services/auth';
+import { PhotoStorage } from './../../services/storage';
 
 @Component({
   selector: 'page-home',
@@ -14,27 +15,36 @@ export class HomePage {
   constructor(
     public navCtrl: NavController,
     private alertCtrl: AlertController,
-    private authService: AuthService
+    private authService: AuthService,
+    private storage: PhotoStorage
   ) {
-    this.authService.authSubject.subscribe(user => {
-      this.user = user;
+    this.authService.af.auth.subscribe((auth) => {
+      if (!auth) {
+        this.user = null;
+        this.storage.initDbByUser(null);
+      } else {
+        this.user = auth.auth;
+        this.storage.initDbByUser(this.user.uid);
+      }
     });
   }
 
-  signIn() {
-    const alert = this.alertCtrl.create({
-      title: 'Login',
+  createModal(title: string, okLabel: string, handler: Function) {
+    return this.alertCtrl.create({
+      title,
       enableBackdropDismiss: false,
       inputs: [
         {
-          name: 'username',
-          placeholder: 'Username',
-          type: 'email'
+          name: 'email',
+          placeholder: 'E-mail',
+          type: 'email',
+          value: '',
         },
         {
           name: 'password',
           placeholder: 'Password',
-          type: 'password'
+          type: 'password',
+          value: '',
         }
       ],
       buttons: [
@@ -43,31 +53,31 @@ export class HomePage {
           role: 'cancel',
         },
         {
-          text: 'Login',
-          handler: data => {
-            if (this.isValid(data.username, data.password)) {
-              this.authService.signIn(data.username, data.password)
-                .then(() => {
-                  return true;
-                })
-                .catch((error) => {
-                  this.errorAlert(error.message);
-                });
-            } else {
-              return false;
-            }
-          }
+          text: okLabel,
+          handler,
         }
       ]
+    });
+  }
+
+  signup() {
+    const alert = this.createModal('Sign Up', 'Register', (data) => {
+      if (this.isValid(data.email, data.password)) {
+        this.authService.create(data.email, data.password);
+      } else {
+        return false;
+      }
     });
     alert.present();
   }
 
-  errorAlert(message) {
-    let alert = this.alertCtrl.create({
-      title: 'Error',
-      subTitle: message,
-      buttons: ['Dismiss']
+  login() {
+    const alert = this.createModal('Login', 'Login', (data) => {
+      if (this.isValid(data.email, data.password)) {
+        this.authService.login(data.email, data.password);
+      } else {
+        return false;
+      }
     });
     alert.present();
   }
@@ -76,12 +86,8 @@ export class HomePage {
     return username && password;
   }
 
-  signOut() {
-    this.authService.signOut();
-  }
-
-  onAuthSuccess(data) {
-    console.log(data);
+  logout() {
+    this.authService.logout();
   }
 
   goPhotoPage() {
