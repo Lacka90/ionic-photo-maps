@@ -1,9 +1,10 @@
 Ionic Photo Maps
 =====================
 
-Application example for describing native plugins.
+An example Ionic2 app which I made to write this blogpost series:
+http://codingsans.com/blog/ionic-2-app-with-native-plugin-integrations
 
-## Using this project
+## Install and run
 
 You'll need the Ionic CLI with support for v2 apps:
 
