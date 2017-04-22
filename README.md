@@ -1,7 +1,7 @@
 Ionic Photo Maps
 =====================
 
-This example app which I made to write this blogpost series:
+An example Ionic2 app which I made to write this blogpost series:
 http://codingsans.com/blog/ionic-2-app-with-native-plugin-integrations
 
 ## Install and run
